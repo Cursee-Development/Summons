@@ -16,7 +16,7 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "com.cursee.examplemod.ExampleModFabric"
+            "com.cursee.summons.SummonsFabric"
         ]
     },
     "mixins": [
@@ -27,8 +27,7 @@
         "fabricloader": ">=${fabric_loader_version}",
         "fabric-api": "*",
         "minecraft": "*",
-        "java": ">=${java_version}",
-        "monolib": ">=1.3.0"
+        "java": ">=${java_version}"
     },
     "suggests": {
         "another-mod": "*"
