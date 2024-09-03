@@ -1,0 +1,4 @@
+// 1.21.1	2024-09-02T20:17:18.3079118	Registries
+d47a19787eaf6e1ba37564fae9fc700740643a27 data/summons/neoforge/biome_modifier/custom_monster_room.json
+7ce26539986d087aab3be04db0d74c2d9a054006 data/summons/worldgen/configured_feature/custom_monster_room.json
+c09977784f7cb1664818a75d836e3587e4f252bb data/summons/worldgen/placed_feature/custom_monster_room.json

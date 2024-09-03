@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": "summons:custom_monster_room",
+  "step": "local_modifications"
+}

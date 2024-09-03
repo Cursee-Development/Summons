@@ -48,6 +48,7 @@ pluginManagement {
                 includeGroupAndSubgroups("org.spongepowered")
             }
         }
+        maven { url = 'https://maven.parchmentmc.org' }
     }
 }
 

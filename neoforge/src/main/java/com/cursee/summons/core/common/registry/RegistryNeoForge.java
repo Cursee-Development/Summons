@@ -1,6 +1,7 @@
 package com.cursee.summons.core.common.registry;
 
 import com.cursee.summons.Constants;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -9,6 +10,8 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -21,9 +24,11 @@ public class RegistryNeoForge {
     protected static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Constants.MOD_ID);
     protected static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Constants.MOD_ID);
     protected static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), Constants.MOD_ID);
+
     protected static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Constants.MOD_ID);
     protected static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Constants.MOD_ID);
     protected static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(BuiltInRegistries.DATA_COMPONENT_TYPE, Constants.MOD_ID);
+    protected static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(BuiltInRegistries.FEATURE, Constants.MOD_ID);
 
     public static void register(IEventBus modEventBus) {
 
@@ -34,6 +39,7 @@ public class RegistryNeoForge {
         ModBlockEntityTypesNeoForge.register();
         ModEntityTypesNeoForge.register();
         ModDataComponentsNeoForge.register();
+        ModFeaturesNeoForge.register();
 
         RegistryNeoForge.BLOCKS.register(modEventBus);
         RegistryNeoForge.ITEMS.register(modEventBus);
@@ -42,6 +48,7 @@ public class RegistryNeoForge {
         RegistryNeoForge.BLOCK_ENTITY_TYPES.register(modEventBus);
         RegistryNeoForge.ENTITY_TYPES.register(modEventBus);
         RegistryNeoForge.DATA_COMPONENTS.register(modEventBus);
+        RegistryNeoForge.FEATURES.register(modEventBus);
     }
 
     protected static <I extends Block, T extends I> DeferredHolder<Block, T> registerBlock(String blockID, Supplier<T> blockSupplier) {
@@ -72,6 +79,11 @@ public class RegistryNeoForge {
 
     protected static <I extends DataComponentType<?>, T extends I> DeferredHolder<DataComponentType<?>, T> registerDataComponent(String dataComponentID, Supplier<T> dataComponent) {
         return DATA_COMPONENTS.register(dataComponentID, dataComponent);
+    }
+
+    protected static <C extends FeatureConfiguration, F extends Feature<C>> DeferredHolder<Feature<?>, F> register(String featureID, F feature) {
+        return FEATURES.register(featureID, () -> feature);
+        // return Registry.register(BuiltInRegistries.FEATURE, featureID, feature);
     }
 
 }

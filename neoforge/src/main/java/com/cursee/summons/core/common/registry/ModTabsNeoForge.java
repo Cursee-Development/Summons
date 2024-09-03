@@ -1,6 +1,21 @@
 package com.cursee.summons.core.common.registry;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.registries.DeferredHolder;
+
 public class ModTabsNeoForge {
 
     public static void register() {}
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SUMMONS_TAB = RegistryNeoForge.registerCreativeModeTab("summons_tab", () -> CreativeModeTab.builder()
+            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+            .title(Component.translatable("itemGroup.summons"))
+            .icon(() -> new ItemStack(Items.SPIDER_SPAWN_EGG))
+            .displayItems((displayParameters, output) -> {
+                output.accept(Items.SPIDER_SPAWN_EGG);
+            }).build());
 }
