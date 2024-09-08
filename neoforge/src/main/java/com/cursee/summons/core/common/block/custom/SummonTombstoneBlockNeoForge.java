@@ -1,8 +1,9 @@
 package com.cursee.summons.core.common.block.custom;
 
+import com.cursee.summons.core.common.entity.custom.QuieterLightningBoltEntityNeoForge;
 import com.cursee.summons.core.common.registry.ModBlocksNeoForge;
+import com.cursee.summons.core.common.registry.ModEntityTypesNeoForge;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -12,8 +13,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -26,7 +25,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
@@ -39,26 +37,25 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
     public static final int MAX_AGE = 11;
     public static final int DELAY_IN_TICKS = 10;
 
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty SUMMONING_AGE = IntegerProperty.create("summoning_age", 0, MAX_AGE);
 
-    public final BlockState DEFAULT_BLOCK_STATE_NO_FACING = defaultBlockState().setValue(SUMMONING_AGE, 0);
+    public final BlockState DEFAULT_BLOCK_STATE = defaultBlockState().setValue(SUMMONING_AGE, 0);
 
     public static final VoxelShape SHAPE = Block.box(-1, 0, -1, 17, 18, 17);
 
     public SummonTombstoneBlockNeoForge(Properties properties) {
         super(properties);
-        this.registerDefaultState(DEFAULT_BLOCK_STATE_NO_FACING.setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(DEFAULT_BLOCK_STATE);
     }
 
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
-        return DEFAULT_BLOCK_STATE_NO_FACING.setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return DEFAULT_BLOCK_STATE;
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, SUMMONING_AGE);
+        builder.add(SUMMONING_AGE);
     }
 
     @Override
@@ -91,8 +88,6 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-
-
         return ItemInteractionResult.FAIL;
     }
 
@@ -115,29 +110,54 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
     protected void tick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource) {
 
         if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) > 0 && blockState.getValue(SUMMONING_AGE) < MAX_AGE) {
-            serverLevel.setBlock(blockPos, blockState.setValue(SUMMONING_AGE, blockState.getValue(SUMMONING_AGE) + 1), Block.UPDATE_ALL_IMMEDIATE);
 
-            serverLevel.playSound(null, blockPos, SoundEvents.ALLAY_ITEM_GIVEN, SoundSource.BLOCKS, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE);
-            serverLevel.playSound(null, blockPos, SoundEvents.ALLAY_ITEM_TAKEN, SoundSource.BLOCKS, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE);
+            serverLevel.playSound(null, blockPos, SoundEvents.ALLAY_ITEM_GIVEN, SoundSource.BLOCKS, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.2f, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.2f);
+            serverLevel.playSound(null, blockPos, SoundEvents.ALLAY_ITEM_TAKEN, SoundSource.BLOCKS, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.2f, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.2f);
+
+            if (blockState.getValue(SUMMONING_AGE) % 4 == 0) {
+
+                final int LIGHTNING_ATTEMPT_RADIUS = 4;
+
+                for (int xOffset = -LIGHTNING_ATTEMPT_RADIUS; xOffset <= LIGHTNING_ATTEMPT_RADIUS; xOffset++) {
+                    for (int yOffset = 0; yOffset <= 1; yOffset++) {
+                        for (int zOffset = -LIGHTNING_ATTEMPT_RADIUS; zOffset <= LIGHTNING_ATTEMPT_RADIUS; zOffset++) {
+
+                            final boolean doAttempt = randomSource.nextInt(1, 32) == 1;
+
+                            if (doAttempt) {
+
+                                final BlockPos attemptPos = blockPos.offset(xOffset, yOffset, zOffset);
+
+                                if (blockPos.distToCenterSqr(attemptPos.getX(), attemptPos.getY(), attemptPos.getZ()) > 1.0D) {
+                                    QuieterLightningBoltEntityNeoForge lightningBolt = ModEntityTypesNeoForge.QUIETER_LIGHTNING_BOLT.get().create(serverLevel);
+                                    lightningBolt.moveTo(attemptPos.getX(), attemptPos.getY(), attemptPos.getZ());
+                                    serverLevel.addFreshEntity(lightningBolt);
+                                }
+                            }
+
+                        } // zOffset
+                    } // yOffset
+                } // xOffset
+            }
+
+            serverLevel.setBlock(blockPos, blockState.setValue(SUMMONING_AGE, blockState.getValue(SUMMONING_AGE) + 1), Block.UPDATE_ALL_IMMEDIATE);
 
             serverLevel.scheduleTick(blockPos, this, DELAY_IN_TICKS);
         }
 
         if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) >= MAX_AGE) {
 
-            serverLevel.playSound(null, blockPos, SoundEvents.DRAGON_FIREBALL_EXPLODE, SoundSource.BLOCKS, 1f, 1f);
+            serverLevel.playSound(null, blockPos, SoundEvents.DRAGON_FIREBALL_EXPLODE, SoundSource.BLOCKS, 0.2f, 0.2f);
 
-            LightningBolt lightningBolt = EntityType.LIGHTNING_BOLT.create(serverLevel);
+            QuieterLightningBoltEntityNeoForge lightningBolt = ModEntityTypesNeoForge.QUIETER_LIGHTNING_BOLT.get().create(serverLevel);
             lightningBolt.moveTo(blockPos.getX(), blockPos.getY(), blockPos.getZ());
             serverLevel.addFreshEntity(lightningBolt);
 
-            serverLevel.setBlock(blockPos, ModBlocksNeoForge.SUMMON_TOMBSTONE_USED.get().defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+            final int FIRE_ATTEMPT_RADIUS = 2;
 
-            final int FIRE_SET_RADIUS = 2;
-
-            for (int xOffset = -FIRE_SET_RADIUS; xOffset <= FIRE_SET_RADIUS; xOffset++) {
-                for (int yOffset = -FIRE_SET_RADIUS; yOffset <= FIRE_SET_RADIUS; yOffset++) {
-                    for (int zOffset = -FIRE_SET_RADIUS; zOffset <= FIRE_SET_RADIUS; zOffset++) {
+            for (int xOffset = -FIRE_ATTEMPT_RADIUS; xOffset <= FIRE_ATTEMPT_RADIUS; xOffset++) {
+                for (int yOffset = -FIRE_ATTEMPT_RADIUS; yOffset <= FIRE_ATTEMPT_RADIUS; yOffset++) {
+                    for (int zOffset = -FIRE_ATTEMPT_RADIUS; zOffset <= FIRE_ATTEMPT_RADIUS; zOffset++) {
 
                         final boolean doAttempt = randomSource.nextInt(1, 4) == 1;
 
@@ -152,9 +172,9 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
                 } // yOffset
             } // xOffset
 
-            for (int xOffset = -FIRE_SET_RADIUS; xOffset <= FIRE_SET_RADIUS; xOffset++) {
-                for (int yOffset = -FIRE_SET_RADIUS; yOffset <= FIRE_SET_RADIUS; yOffset++) {
-                    for (int zOffset = -FIRE_SET_RADIUS; zOffset <= FIRE_SET_RADIUS; zOffset++) {
+            for (int xOffset = -FIRE_ATTEMPT_RADIUS; xOffset <= FIRE_ATTEMPT_RADIUS; xOffset++) {
+                for (int yOffset = -FIRE_ATTEMPT_RADIUS; yOffset <= FIRE_ATTEMPT_RADIUS; yOffset++) {
+                    for (int zOffset = -FIRE_ATTEMPT_RADIUS; zOffset <= FIRE_ATTEMPT_RADIUS; zOffset++) {
 
                         final boolean doAttempt = randomSource.nextInt(1, 4) == 1;
 
@@ -168,6 +188,10 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
                     } // zOffset
                 } // yOffset
             } // xOffset
+
+            serverLevel.setBlock(blockPos, ModBlocksNeoForge.SUMMON_TOMBSTONE_USED.get().defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+            serverLevel.setBlock(blockPos.above(), Blocks.FIRE.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+
         }
     }
 
