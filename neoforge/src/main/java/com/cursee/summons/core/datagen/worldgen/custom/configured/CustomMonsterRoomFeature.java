@@ -59,15 +59,15 @@ public class CustomMonsterRoomFeature extends MonsterRoomFeature {
     @Override @SuppressWarnings("deprecation")
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
 
-        final BlockPos pos = context.origin();
+        // final BlockPos pos = context.origin();
 
-        Constants.LOG.info("Attempted to place CustomMonsterRoomFeature instance at ({}, {}, {})", pos.getX(), pos.getY(), pos.getZ());
+        // Constants.LOG.info("Attempted to place CustomMonsterRoomFeature instance at ({}, {}, {})", pos.getX(), pos.getY(), pos.getZ());
 
         // return super.place(context);
         // return attemptOriginalMonsterRoom(context);
 
         // based on testing, the feature will not always be placed
-        return CustomMonsterRoomFeaturePlacement.attemptWithContext(context); // attemptCustomMonsterRoom(context);
+        return CustomMonsterRoomFeaturePlacement.attemptWithContext(this, context); // attemptCustomMonsterRoom(context);
     }
 
     private boolean attemptCustomMonsterRoom(FeaturePlaceContext<NoneFeatureConfiguration> context) {
@@ -149,7 +149,7 @@ public class CustomMonsterRoomFeature extends MonsterRoomFeature {
         WorldGenLevel level = context.level();
 
         // unused by default, due to obfuscation
-        final int ROOM_HEIGHT = 3;
+        final int ROOM_HEIGHT_ABOVE_SPAWNER = 3;
 
         final int FLOOR_LAYER = -1;
         final int CEILING_LAYER = 4;
@@ -200,29 +200,29 @@ public class CustomMonsterRoomFeature extends MonsterRoomFeature {
 
         if (canBePlaced) {
             
-            for (int localX = lowerBoundOffsetX; localX <= upperBoundOffsetX; localX++) {
-                for (int localInverseY = ROOM_HEIGHT; localInverseY >= -1; localInverseY--) {
-                    for (int localZ = lowerBoundOffsetZ; localZ <= upperBoundOffsetZ; localZ++) {
+            for (int xOffset = lowerBoundOffsetX; xOffset <= upperBoundOffsetX; xOffset++) {
+                for (int yOffset = ROOM_HEIGHT_ABOVE_SPAWNER; yOffset >= -1; yOffset--) {
+                    for (int zOffset = lowerBoundOffsetZ; zOffset <= upperBoundOffsetZ; zOffset++) {
 
-                        BlockPos roomCheckPos = spawnerPosition.offset(localX, localInverseY, localZ);
+                        BlockPos positionToCheck = spawnerPosition.offset(xOffset, yOffset, zOffset);
 
-                        BlockState blockState = level.getBlockState(roomCheckPos);
+                        BlockState positionBlockState = level.getBlockState(positionToCheck);
 
-                        if (localX == lowerBoundOffsetX || localInverseY == -1 || localZ == lowerBoundOffsetZ || localX == upperBoundOffsetX || localInverseY == 4 || localZ == upperBoundOffsetZ) {
-                            if (roomCheckPos.getY() >= level.getMinBuildHeight() && !level.getBlockState(roomCheckPos.below()).isSolid()) {
-                                level.setBlock(roomCheckPos, AIR, 2);
+                        if (xOffset == lowerBoundOffsetX || yOffset == -1 || zOffset == lowerBoundOffsetZ || xOffset == upperBoundOffsetX || yOffset == 4 || zOffset == upperBoundOffsetZ) {
+                            if (positionToCheck.getY() >= level.getMinBuildHeight() && !level.getBlockState(positionToCheck.below()).isSolid()) {
+                                level.setBlock(positionToCheck, AIR, 2);
                             }
-                            else if (blockState.isSolid() && !blockState.is(Blocks.CHEST)) {
-                                if (localInverseY == -1 && randomSource.nextInt(4) != 0) {
-                                    this.safeSetBlock(level, roomCheckPos, Blocks.MOSSY_COBBLESTONE.defaultBlockState(), cannotReplacePredicate);
+                            else if (positionBlockState.isSolid() && !positionBlockState.is(Blocks.CHEST)) {
+                                if (yOffset == -1 && randomSource.nextInt(4) != 0) {
+                                    this.safeSetBlock(level, positionToCheck, Blocks.MOSSY_COBBLESTONE.defaultBlockState(), cannotReplacePredicate);
                                 }
                                 else {
-                                    this.safeSetBlock(level, roomCheckPos, Blocks.COBBLESTONE.defaultBlockState(), cannotReplacePredicate);
+                                    this.safeSetBlock(level, positionToCheck, Blocks.COBBLESTONE.defaultBlockState(), cannotReplacePredicate);
                                 }
                             }
                         }
-                        else if (!blockState.is(Blocks.CHEST) && !blockState.is(Blocks.SPAWNER)) {
-                            this.safeSetBlock(level, roomCheckPos, AIR, cannotReplacePredicate);
+                        else if (!positionBlockState.is(Blocks.CHEST) && !positionBlockState.is(Blocks.SPAWNER)) {
+                            this.safeSetBlock(level, positionToCheck, AIR, cannotReplacePredicate);
                         }
                     }
                 }

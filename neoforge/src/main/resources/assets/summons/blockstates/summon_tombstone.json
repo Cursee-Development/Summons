@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "summoning_age=0": {
+      "model": "summons:block/summon_tombstone"
+    },
+    "summoning_age=1": {
+      "model": "summons:block/summon_tombstone_summoning_age1"
+    },
+    "summoning_age=2": {
+      "model": "summons:block/summon_tombstone_summoning_age2"
+    },
+    "summoning_age=3": {
+      "model": "summons:block/summon_tombstone_summoning_age3"
+    },
+    "summoning_age=4": {
+      "model": "summons:block/summon_tombstone_summoning_age4"
+    },
+    "summoning_age=5": {
+      "model": "summons:block/summon_tombstone_summoning_age5"
+    },
+    "summoning_age=6": {
+      "model": "summons:block/summon_tombstone_summoning_age6"
+    },
+    "summoning_age=7": {
+      "model": "summons:block/summon_tombstone_summoning_age7"
+    },
+    "summoning_age=8": {
+      "model": "summons:block/summon_tombstone_summoning_age8"
+    },
+    "summoning_age=9": {
+      "model": "summons:block/summon_tombstone_summoning_age9"
+    },
+    "summoning_age=10": {
+      "model": "summons:block/summon_tombstone_summoning_age10"
+    },
+    "summoning_age=11": {
+      "model": "summons:block/summon_tombstone_summoning_age11"
+    }
+  }
+}

@@ -14,8 +14,9 @@ public class ModTabsNeoForge {
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SUMMONS_TAB = RegistryNeoForge.registerCreativeModeTab("summons_tab", () -> CreativeModeTab.builder()
             .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
             .title(Component.translatable("itemGroup.summons"))
-            .icon(() -> new ItemStack(Items.SPIDER_SPAWN_EGG))
+            .icon(() -> new ItemStack(ModBlocksNeoForge.SUMMON_TOMBSTONE.get()))
             .displayItems((displayParameters, output) -> {
-                output.accept(Items.SPIDER_SPAWN_EGG);
+                output.accept(ModBlocksNeoForge.SUMMON_TOMBSTONE.get());
+                output.accept(ModBlocksNeoForge.SUMMON_TOMBSTONE_USED.get());
             }).build());
 }

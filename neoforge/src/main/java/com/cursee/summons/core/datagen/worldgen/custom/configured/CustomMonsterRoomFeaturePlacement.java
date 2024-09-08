@@ -1,24 +1,29 @@
 package com.cursee.summons.core.datagen.worldgen.custom.configured;
 
+import com.cursee.summons.Constants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public class CustomMonsterRoomFeaturePlacement {
 
-    public static boolean attemptWithContext(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+    public static final int XZ_OFFSET_WALL = 8;
+
+    public static final int Y_OFFSET_FLOOR = -1;
+    public static final int Y_OFFSET_CEILING = 4;
+
+    public static boolean attemptWithContext(CustomMonsterRoomFeature feature, FeaturePlaceContext<NoneFeatureConfiguration> context) {
 
         final WorldGenLevel level = context.level();
         final ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -26,14 +31,7 @@ public class CustomMonsterRoomFeaturePlacement {
         final BlockPos origin = context.origin();
         final FeatureConfiguration configuration = context.config();
 
-        final Predicate<BlockState> notReplaceable = Feature.isReplaceable(BlockTags.FEATURES_CANNOT_REPLACE);
-
         // unlike the original MonsterRoomFeature, we want to always create a cube instead of sometimes a cube, and sometimes a rectangular prism
-
-        final int XZ_OFFSET_WALL = 4;
-
-        final int Y_OFFSET_FLOOR = -1;
-        final int Y_OFFSET_CEILING = 4;
 
         boolean canBePlaced = false;
 
@@ -60,15 +58,59 @@ public class CustomMonsterRoomFeaturePlacement {
             } // y
         } // x
 
-        if (canBePlaced) return createFeature(level, chunkGenerator, random, origin, configuration);
+        if (canBePlaced) return createFeature(feature, level, chunkGenerator, random, origin, configuration);
 
         return false;
     }
 
-    private static boolean createFeature(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin, FeatureConfiguration configuration) {
+    private static boolean createFeature(CustomMonsterRoomFeature feature, WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin, FeatureConfiguration configuration) {
 
+        final Predicate<BlockState> notReplaceable = Feature.isReplaceable(BlockTags.FEATURES_CANNOT_REPLACE);
 
+        final int XZ_LOWER_BOUND = -XZ_OFFSET_WALL + 1;
+        final int XZ_UPPER_BOUND = XZ_OFFSET_WALL - 1;
+
+        for (int xOffset = XZ_LOWER_BOUND; xOffset <= XZ_UPPER_BOUND; xOffset++) {
+            for (int yOffset = 3; yOffset >= -1; yOffset--) {
+                for (int zOffset = XZ_LOWER_BOUND; zOffset <= XZ_UPPER_BOUND; zOffset++) {
+
+                    final BlockPos positionToCheck = origin.offset(xOffset, yOffset, zOffset);
+                    final BlockState positionBlockState = level.getBlockState(positionToCheck);
+
+                    // check floor, walls, and ceiling
+
+                    if (xOffset == XZ_LOWER_BOUND || yOffset == Y_OFFSET_FLOOR || zOffset == XZ_LOWER_BOUND || xOffset == XZ_UPPER_BOUND || yOffset == Y_OFFSET_CEILING || zOffset == XZ_UPPER_BOUND) {
+
+                        if (positionToCheck.getY() >= level.getMinBuildHeight() && !level.getBlockState(positionToCheck.below()).isSolid()) {
+                            level.setBlock(positionToCheck, Blocks.CAVE_AIR.defaultBlockState(), 2);
+                        }
+                        else if (positionBlockState.isSolid() && !positionBlockState.is(Blocks.CHEST)) {
+
+                            if (yOffset == Y_OFFSET_FLOOR && random.nextInt(4) != 0) {
+                                safeSetBlock(level, positionToCheck, Blocks.QUARTZ_BRICKS.defaultBlockState(), notReplaceable);
+                            }
+                            else {
+                                safeSetBlock(level, positionToCheck, Blocks.QUARTZ_BLOCK.defaultBlockState(), notReplaceable);
+                            }
+                        }
+                    }
+                    else if (!positionBlockState.is(Blocks.CHEST) && !positionBlockState.is(Blocks.SPAWNER)) {
+                        safeSetBlock(level, positionToCheck, Blocks.CAVE_AIR.defaultBlockState(), notReplaceable);
+                    }
+                }
+            }
+        }
+
+        safeSetBlock(level, origin, Blocks.DIAMOND_BLOCK.defaultBlockState(), notReplaceable);
+
+        Constants.LOG.info("*Should* have created CustomMonsterRoomFeature at ({}, {}, {})", origin.getX(), origin.getY(), origin.getZ());
 
         return false;
+    }
+
+    public static void safeSetBlock(WorldGenLevel level, BlockPos pos, BlockState state, Predicate<BlockState> predicate) {
+        if (predicate.test(level.getBlockState(pos))) {
+            level.setBlock(pos, state, Block.UPDATE_CLIENTS);
+        }
     }
 }

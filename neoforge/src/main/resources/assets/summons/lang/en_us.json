@@ -1,3 +1,8 @@
 {
-  "itemGroup.summons": "Summons"
+  "itemGroup.summons": "Summons",
+
+  "block.summons.summon_tombstone": "Summon Tombstone",
+  "block.summons.summon_tombstone_used": "Summon Tombstone (Used)",
+
+  "message.summons.requires_empty_hands": "Maybe I should empty my hands first..."
 }

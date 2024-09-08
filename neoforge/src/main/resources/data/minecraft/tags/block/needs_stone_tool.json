@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "summons:summon_tombstone",
+    "summons:summon_tombstone_used"
+  ]
+}
