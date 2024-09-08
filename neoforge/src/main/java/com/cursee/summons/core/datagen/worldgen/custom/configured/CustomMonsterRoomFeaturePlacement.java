@@ -88,7 +88,11 @@ public class CustomMonsterRoomFeaturePlacement {
                         else if (positionBlockState.isSolid() && !positionBlockState.is(Blocks.CHEST)) {
 
                             if (yOffset == Y_OFFSET_FLOOR && random.nextInt(4) != 0) {
-                                safeSetBlock(level, positionToCheck, Blocks.QUARTZ_BRICKS.defaultBlockState(), notReplaceable);
+                                if (random.nextBoolean()) {
+                                    safeSetBlock(level, positionToCheck, Blocks.QUARTZ_BRICKS.defaultBlockState(), notReplaceable);
+                                } else {
+                                    safeSetBlock(level, positionToCheck, Blocks.GLOWSTONE.defaultBlockState(), notReplaceable);
+                                }
                             }
                             else {
                                 safeSetBlock(level, positionToCheck, Blocks.QUARTZ_BLOCK.defaultBlockState(), notReplaceable);
