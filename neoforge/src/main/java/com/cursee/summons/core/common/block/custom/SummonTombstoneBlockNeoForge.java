@@ -1,6 +1,8 @@
 package com.cursee.summons.core.common.block.custom;
 
+import com.cursee.summons.core.common.block.entity.custom.SummonTombstoneBlockEntityNeoForge;
 import com.cursee.summons.core.common.entity.custom.QuieterLightningBoltEntityNeoForge;
+import com.cursee.summons.core.common.registry.ModBlockEntityTypesNeoForge;
 import com.cursee.summons.core.common.registry.ModBlocksNeoForge;
 import com.cursee.summons.core.common.registry.ModEntityTypesNeoForge;
 import net.minecraft.core.BlockPos;
@@ -32,6 +34,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.ToIntFunction;
+
 public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
     public static final int MAX_AGE = 11;
@@ -46,6 +50,10 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
     public SummonTombstoneBlockNeoForge(Properties properties) {
         super(properties);
         this.registerDefaultState(DEFAULT_BLOCK_STATE);
+    }
+
+    public static int summoningLightEmission(BlockState blockState) {
+        return blockState.getValue(SUMMONING_AGE);
     }
 
     @Override
@@ -65,12 +73,16 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return null;
+        return ModBlockEntityTypesNeoForge.SUMMON_TOMBSTONE.get().create(pos, state);
+    }
+
+    public static @Nullable <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> pServerType, BlockEntityType<E> pClientType, BlockEntityTicker<? super E> pTicker) {
+        return pClientType == pServerType ? (BlockEntityTicker<A>)pTicker : null;
     }
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return null;
+        return createTickerHelper(blockEntityType, ModBlockEntityTypesNeoForge.SUMMON_TOMBSTONE.get(), SummonTombstoneBlockEntityNeoForge::tick);
     }
 
     @Override
