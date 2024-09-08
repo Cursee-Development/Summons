@@ -1,6 +1,7 @@
 package com.cursee.summons.core.common.registry;
 
 import com.cursee.summons.Constants;
+import com.cursee.summons.core.common.entity.custom.FairySummonEntity;
 import com.cursee.summons.core.common.entity.custom.QuieterLightningBoltEntityNeoForge;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -12,4 +13,6 @@ public class ModEntityTypesNeoForge {
     public static void register() {}
 
     public static final DeferredHolder<EntityType<?>, EntityType<QuieterLightningBoltEntityNeoForge>> QUIETER_LIGHTNING_BOLT = RegistryNeoForge.registerEntityType("quieter_lightning_bolt", () -> EntityType.Builder.of(QuieterLightningBoltEntityNeoForge::new, MobCategory.MISC).build(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "quieter_lightning_bolt").toString()));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<FairySummonEntity>> FAIRY_SUMMON = RegistryNeoForge.registerEntityType("fairy_summon", () -> EntityType.Builder.of(FairySummonEntity::new, MobCategory.MISC).build(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "fairy_summon").toString()));
 }
