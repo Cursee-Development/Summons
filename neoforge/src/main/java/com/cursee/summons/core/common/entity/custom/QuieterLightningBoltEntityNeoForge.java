@@ -64,8 +64,8 @@ public class QuieterLightningBoltEntityNeoForge extends Entity {
                         this.getX(), this.getY(), this.getZ(),
                         SoundEvents.LIGHTNING_BOLT_THUNDER,
                         SoundSource.WEATHER,
-                        0.2f,
-                        0.2F,
+                        0.1f,
+                        0.1F,
                         false
                 );
                 this.level().playLocalSound(

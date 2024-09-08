@@ -111,8 +111,8 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
         if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) > 0 && blockState.getValue(SUMMONING_AGE) < MAX_AGE) {
 
-            serverLevel.playSound(null, blockPos, SoundEvents.ALLAY_ITEM_GIVEN, SoundSource.BLOCKS, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.2f, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.2f);
-            serverLevel.playSound(null, blockPos, SoundEvents.ALLAY_ITEM_TAKEN, SoundSource.BLOCKS, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.2f, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.2f);
+            serverLevel.playSound(null, blockPos, SoundEvents.ALLAY_ITEM_GIVEN, SoundSource.BLOCKS, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.3f, Math.min((float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.2f, 1.0f));
+            serverLevel.playSound(null, blockPos, SoundEvents.ALLAY_ITEM_TAKEN, SoundSource.BLOCKS, (float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.3f, Math.min((float) blockState.getValue(SUMMONING_AGE) / MAX_AGE + 0.2f, 1.0f));
 
             if (blockState.getValue(SUMMONING_AGE) % 4 == 0) {
 
@@ -122,7 +122,7 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
                     for (int yOffset = 0; yOffset <= 1; yOffset++) {
                         for (int zOffset = -LIGHTNING_ATTEMPT_RADIUS; zOffset <= LIGHTNING_ATTEMPT_RADIUS; zOffset++) {
 
-                            final boolean doAttempt = randomSource.nextInt(1, 32) == 1;
+                            final boolean doAttempt = randomSource.nextInt(1, 64) == 1;
 
                             if (doAttempt) {
 
@@ -147,7 +147,7 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
         if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) >= MAX_AGE) {
 
-            serverLevel.playSound(null, blockPos, SoundEvents.DRAGON_FIREBALL_EXPLODE, SoundSource.BLOCKS, 0.2f, 0.2f);
+            serverLevel.playSound(null, blockPos, SoundEvents.DRAGON_FIREBALL_EXPLODE, SoundSource.BLOCKS, 0.1f, 0.1f);
 
             QuieterLightningBoltEntityNeoForge lightningBolt = ModEntityTypesNeoForge.QUIETER_LIGHTNING_BOLT.get().create(serverLevel);
             lightningBolt.moveTo(blockPos.getX(), blockPos.getY(), blockPos.getZ());
@@ -165,24 +165,7 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
                             final BlockPos attemptPos = blockPos.offset(xOffset, yOffset, zOffset);
 
-                            serverLevel.explode(null, attemptPos.getX(), attemptPos.getY(), attemptPos.getZ(), 0.2f, true, Level.ExplosionInteraction.TNT);
-                        }
-
-                    } // zOffset
-                } // yOffset
-            } // xOffset
-
-            for (int xOffset = -FIRE_ATTEMPT_RADIUS; xOffset <= FIRE_ATTEMPT_RADIUS; xOffset++) {
-                for (int yOffset = -FIRE_ATTEMPT_RADIUS; yOffset <= FIRE_ATTEMPT_RADIUS; yOffset++) {
-                    for (int zOffset = -FIRE_ATTEMPT_RADIUS; zOffset <= FIRE_ATTEMPT_RADIUS; zOffset++) {
-
-                        final boolean doAttempt = randomSource.nextInt(1, 4) == 1;
-
-                        if (doAttempt && xOffset != 0 && yOffset != 0 && zOffset != 0) {
-
-                            final BlockPos attemptPos = blockPos.offset(xOffset, yOffset, zOffset);
-
-                            serverLevel.setBlock(attemptPos, Blocks.FIRE.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+                            if (serverLevel.getBlockState(attemptPos).isEmpty()) serverLevel.setBlock(attemptPos, Blocks.FIRE.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
                         }
 
                     } // zOffset
@@ -198,8 +181,24 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
     @Override
     public void animateTick(BlockState blockState, Level level, BlockPos blockPos, RandomSource randomSource) {
 
-        // ages to 11, but we stop particles at 10 to allow them to dissipate / disperse
-        if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) >= 1 && blockState.getValue(SUMMONING_AGE) <= 10) {
+        for (int i = 0; i < 3; i++) {
+
+            int xMod = randomSource.nextInt(2) * 2 - 1;
+            int zMod = randomSource.nextInt(2) * 2 - 1;
+
+            double xPos = (double)blockPos.getX() + 0.5 + 0.25 * (double)xMod;
+            double yPos = (double)((float)blockPos.getY() + randomSource.nextFloat());
+            double zPos = (double)blockPos.getZ() + 0.5 + 0.25 * (double)zMod;
+
+            double xSpeed = (double)(randomSource.nextFloat() * (float)xMod);
+            double ySpeed = ((double)randomSource.nextFloat() - 0.5) * 0.125;
+            double zSpeed = (double)(randomSource.nextFloat() * (float)zMod);
+
+            level.addParticle(ParticleTypes.PORTAL, xPos, yPos, zPos, xSpeed, ySpeed, zSpeed);
+        }
+
+        // ages to MAX_AGE, but we stop particles at MAX_AGE - 2 to allow them to dissipate / disperse
+        if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) >= 1 && blockState.getValue(SUMMONING_AGE) <= MAX_AGE - 2) {
 
             // enchant particles should stop in the center of the egg
             for (BlockPos position : EnchantingTableBlock.BOOKSHELF_OFFSETS) {
@@ -207,7 +206,7 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
                     level.addParticle(ParticleTypes.ENCHANT, (double) blockPos.getX() + 0.5, (double) blockPos.getY() + 2.0 + 0.5, (double) blockPos.getZ() + 0.5, (double) ((float) position.getX() + randomSource.nextFloat()) - 0.5, (double) ((float) position.getY() - randomSource.nextFloat() - 1.0F), (double) ((float) position.getZ() + randomSource.nextFloat()) - 0.5);
             }
 
-            for (int particleCount = 0; particleCount < 3; ++particleCount) {
+            for (int particleCount = 0; particleCount < 16; ++particleCount) {
 
                 int xMod = randomSource.nextInt(2) * 2 - 1;
                 int zMod = randomSource.nextInt(2) * 2 - 1;
@@ -220,7 +219,8 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
                 double ySpeed = ((double) randomSource.nextFloat() - 0.5D) * 0.125D;
                 double zSpeed = (double) (randomSource.nextFloat() * (float) zMod);
 
-                level.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, xPos, yPos, zPos, xSpeed * 0.1D, ySpeed * 0.1D, zSpeed * 0.1D);
+                level.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, xPos, yPos, zPos, xSpeed * 0.2D, ySpeed * 0.1D, zSpeed * 0.2D);
+                level.addParticle(ParticleTypes.PORTAL, xPos, yPos, zPos, xSpeed * 0.2D, ySpeed * 0.1D, zSpeed * 0.2D);
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.cursee.summons.core.datagen.worldgen.custom.configured;
 
 import com.cursee.summons.Constants;
+import com.cursee.summons.core.common.registry.ModBlocksNeoForge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
@@ -101,7 +102,12 @@ public class CustomMonsterRoomFeaturePlacement {
             }
         }
 
-        safeSetBlock(level, origin, Blocks.DIAMOND_BLOCK.defaultBlockState(), notReplaceable);
+        // 1 in 1000 chance to place "used" tombstone
+        if (random.nextInt(1, 1000) == 1) {
+            safeSetBlock(level, origin, ModBlocksNeoForge.SUMMON_TOMBSTONE_USED.get().defaultBlockState(), notReplaceable);
+        } else {
+            safeSetBlock(level, origin, ModBlocksNeoForge.SUMMON_TOMBSTONE.get().defaultBlockState(), notReplaceable);
+        }
 
         Constants.LOG.info("*Should* have created CustomMonsterRoomFeature at ({}, {}, {})", origin.getX(), origin.getY(), origin.getZ());
 
