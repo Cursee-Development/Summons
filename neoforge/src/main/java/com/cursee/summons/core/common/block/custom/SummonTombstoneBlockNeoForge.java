@@ -52,10 +52,6 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
         this.registerDefaultState(DEFAULT_BLOCK_STATE);
     }
 
-    public static int summoningLightEmission(BlockState blockState) {
-        return blockState.getValue(SUMMONING_AGE);
-    }
-
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
         return DEFAULT_BLOCK_STATE;
@@ -235,5 +231,9 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
                 level.addParticle(ParticleTypes.PORTAL, xPos, yPos, zPos, xSpeed * 0.2D, ySpeed * 0.1D, zSpeed * 0.2D);
             }
         }
+    }
+
+    public static int summoningLightEmission(BlockState blockState) {
+        return blockState.getValue(SUMMONING_AGE);
     }
 }
