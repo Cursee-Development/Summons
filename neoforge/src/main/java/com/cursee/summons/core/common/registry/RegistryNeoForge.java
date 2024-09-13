@@ -40,6 +40,7 @@ public class RegistryNeoForge {
         ModEntityTypesNeoForge.register();
         ModDataComponentsNeoForge.register();
         ModFeaturesNeoForge.register();
+        ModModelLayersNeoForge.register();
 
         RegistryNeoForge.BLOCKS.register(modEventBus);
         RegistryNeoForge.ITEMS.register(modEventBus);

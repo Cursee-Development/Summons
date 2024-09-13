@@ -49,7 +49,7 @@ public static final AnimationDefinition IDLE_FLOAT = AnimationDefinition.Builder
 		new Keyframe(2f, KeyframeAnimations.degreeVec(0f, 0f, 0f),
 			AnimationChannel.Interpolations.LINEAR))).build();
 public static final AnimationDefinition IDLE_HEAL = AnimationDefinition.Builder.withLength(0.3f)
-.addAnimation("root",
+.addAnimation("entry",
 	new AnimationChannel(AnimationChannel.Targets.POSITION, 
 		new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, 0f),
 			AnimationChannel.Interpolations.LINEAR), 
@@ -106,7 +106,7 @@ public static final AnimationDefinition IDLE_HEAL = AnimationDefinition.Builder.
 		new Keyframe(0.2916767f, KeyframeAnimations.degreeVec(0f, 0f, 0f),
 			AnimationChannel.Interpolations.LINEAR))).build();
 public static final AnimationDefinition FLY_FORWARD = AnimationDefinition.Builder.withLength(1f).looping()
-.addAnimation("root",
+.addAnimation("entry",
 	new AnimationChannel(AnimationChannel.Targets.POSITION, 
 		new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, 0f),
 			AnimationChannel.Interpolations.LINEAR), 
@@ -114,7 +114,7 @@ public static final AnimationDefinition FLY_FORWARD = AnimationDefinition.Builde
 			AnimationChannel.Interpolations.LINEAR), 
 		new Keyframe(1f, KeyframeAnimations.posVec(0f, 0f, 0f),
 			AnimationChannel.Interpolations.LINEAR)))
-.addAnimation("root",
+.addAnimation("entry",
 	new AnimationChannel(AnimationChannel.Targets.ROTATION,
 		new Keyframe(0f, KeyframeAnimations.degreeVec(10f, 0f, 0f),
 			AnimationChannel.Interpolations.LINEAR),

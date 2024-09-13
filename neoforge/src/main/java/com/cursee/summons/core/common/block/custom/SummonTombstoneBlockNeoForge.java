@@ -1,6 +1,7 @@
 package com.cursee.summons.core.common.block.custom;
 
 import com.cursee.summons.core.common.block.entity.custom.SummonTombstoneBlockEntityNeoForge;
+import com.cursee.summons.core.common.entity.AbstractSummon;
 import com.cursee.summons.core.common.entity.custom.QuieterLightningBoltEntityNeoForge;
 import com.cursee.summons.core.common.registry.ModBlockEntityTypesNeoForge;
 import com.cursee.summons.core.common.registry.ModBlocksNeoForge;
@@ -15,6 +16,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -26,15 +28,13 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.ToIntFunction;
+import java.util.List;
 
 public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
@@ -182,9 +182,18 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
             serverLevel.setBlock(blockPos, ModBlocksNeoForge.SUMMON_TOMBSTONE_USED.get().defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
             serverLevel.setBlock(blockPos.above(), Blocks.FIRE.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+            
+            List<EntityType<? extends AbstractSummon>> possibleSummonTypes = List.of(ModEntityTypesNeoForge.FAIRY_SUMMON.get(), ModEntityTypesNeoForge.BATTLE_SUMMON.get());
+            final int toSpawnIndex = randomSource.nextInt(1, possibleSummonTypes.size()) - 1;
+            AbstractSummon summon = possibleSummonTypes.get(toSpawnIndex).create(serverLevel);
+            summon.moveTo(blockPos.getX(), blockPos.above().getY(), blockPos.getZ());
+            serverLevel.addFreshEntity(summon);
+            double d0 = serverLevel.random.nextDouble() * (float) (Math.PI * 2);
+            summon.setDeltaMovement(-Math.sin(d0) * 0.02, 0.4F, -Math.cos(d0) * 0.02);
+            summon.setRemainingFireTicks(4 * 20);
 
         }
-    }
+    } // end tick(BlockState, ServerLevel, BlockPos, RandomSource)
 
     @Override
     public void animateTick(BlockState blockState, Level level, BlockPos blockPos, RandomSource randomSource) {
