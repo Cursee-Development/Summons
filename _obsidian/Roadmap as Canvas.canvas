@@ -1,0 +1,9 @@
+{
+	"nodes":[
+		{"id":"e7d18e64a68156a8","type":"file","file":"Summons 1.0.0 Roadmap.md","x":-200,"y":-220,"width":400,"height":420},
+		{"id":"3d6f0ed72a667b1f","x":300,"y":-220,"width":340,"height":420,"type":"text","text":"## 1. Base Mechanics\n\n- Generation of Monster Room-like world features where Summon Tombstones can be found.\n- A Summon Tombstone creates a Summon at random that is linked to the player and will only obey their commands."}
+	],
+	"edges":[
+		{"id":"f977ed1b4479f21d","fromNode":"e7d18e64a68156a8","fromSide":"right","toNode":"3d6f0ed72a667b1f","toSide":"left"}
+	]
+}
