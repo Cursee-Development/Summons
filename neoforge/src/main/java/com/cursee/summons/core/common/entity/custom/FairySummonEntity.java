@@ -89,6 +89,6 @@ public class FairySummonEntity extends AbstractSummon implements FlyingAnimal {
     public void tick() {
         super.tick();
 
-        if (getOwner() != null && distanceToSqr(getOwner()) <= 3.0D) getOwner().addEffect(new MobEffectInstance(MobEffects.REGENERATION, 2, 2));
+        if (getOwner() != null && distanceToSqr(getOwner()) <= 6.0D) getOwner().addEffect(new MobEffectInstance(MobEffects.REGENERATION, 2, 2));
     }
 }
