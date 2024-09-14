@@ -4,5 +4,9 @@
   "block.summons.summon_tombstone": "Summon Tombstone",
   "block.summons.summon_tombstone_used": "Summon Tombstone (Used)",
 
-  "message.summons.requires_empty_hands": "Maybe I should empty my hands first..."
+  "message.summons.requires_empty_hands": "Maybe I should empty my hands first...",
+
+  "entity.summons.fairy_summon": "Fairy Summon",
+  "entity.summons.battle_summon": "Battle Summon",
+  "entity.summons.bird_summon": "Bird Summon"
 }
