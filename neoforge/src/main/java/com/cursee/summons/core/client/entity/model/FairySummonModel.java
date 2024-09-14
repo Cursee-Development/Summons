@@ -5,15 +5,18 @@ package com.cursee.summons.core.client.entity.model;
 // Paste this class into your mod and generate all required imports
 
 
+import com.cursee.summons.core.client.entity.animations.FairySummonAnimations;
+import com.cursee.summons.core.common.entity.custom.FairySummonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 
-public class FairySummonModel<T extends Entity> extends HierarchicalModel<T> {
+public class FairySummonModel<T extends FairySummonEntity> extends HierarchicalModel<T> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
     // public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "infant_fairy"), "main");
     private final ModelPart entry;
@@ -69,8 +72,11 @@ public class FairySummonModel<T extends Entity> extends HierarchicalModel<T> {
     }
 
     @Override
-    public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(FairySummonEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
+        this.applyHeadRotation(netHeadYaw, headPitch);
+        this.animateWalk(FairySummonAnimations.FLY_FORWARD, limbSwing, limbSwingAmount, 2f, 2.5f);
+        this.animate(entity.idleAnimationState, FairySummonAnimations.IDLE_FLOAT, ageInTicks, 1f);
     }
 
 //    @Override
@@ -86,5 +92,14 @@ public class FairySummonModel<T extends Entity> extends HierarchicalModel<T> {
     @Override
     public ModelPart root() {
         return this.entry;
+    }
+
+    private void applyHeadRotation(float netHeadYaw, float headPitch) {
+
+        netHeadYaw = Mth.clamp(netHeadYaw, -30.0F, 30.0F);
+        headPitch = Mth.clamp(headPitch, -25.0F, 45.0F);
+
+        this.head.yRot = netHeadYaw * (float) (Math.PI / 180.0);
+        this.head.xRot = headPitch * (float) (Math.PI / 180.0);
     }
 }

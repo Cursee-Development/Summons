@@ -10,4 +10,8 @@ public abstract class AbstractSummon extends TamableAnimal {
     protected AbstractSummon(EntityType<? extends TamableAnimal> entityType, Level level) {
         super(entityType, level);
     }
+
+    public int secondsToTicks(float seconds) {
+        return (int)(seconds * 20f);
+    }
 }

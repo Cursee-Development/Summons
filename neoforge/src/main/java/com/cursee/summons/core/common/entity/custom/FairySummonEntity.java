@@ -9,6 +9,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -25,6 +26,9 @@ import net.minecraft.world.level.pathfinder.PathType;
 import org.jetbrains.annotations.Nullable;
 
 public class FairySummonEntity extends AbstractSummon implements FlyingAnimal {
+
+    public final AnimationState idleAnimationState = new AnimationState();
+    private int idleAnimationTimeout = 0;
 
     public FairySummonEntity(EntityType<?> entityType, Level level) {
         super(ModEntityTypesNeoForge.FAIRY_SUMMON.get(), level);
@@ -89,6 +93,23 @@ public class FairySummonEntity extends AbstractSummon implements FlyingAnimal {
     public void tick() {
         super.tick();
 
-        if (getOwner() != null && distanceToSqr(getOwner()) <= 6.0D) getOwner().addEffect(new MobEffectInstance(MobEffects.REGENERATION, 2, 2));
+        if (this.level().isClientSide()) {
+            this.setupAnimationStates();
+        }
+
+        if (this.level().isClientSide() || !(this.level() instanceof ServerLevel serverLevel)) return;
+
+        if (getOwner() != null && distanceToSqr(getOwner()) <= 6.0D) getOwner().addEffect(new MobEffectInstance(MobEffects.REGENERATION, secondsToTicks(2f)));
+    }
+
+    private void setupAnimationStates() {
+
+        if (this.idleAnimationTimeout <= 0) {
+            this.idleAnimationTimeout = secondsToTicks(2f);
+            this.idleAnimationState.start(this.tickCount);
+        }
+        else {
+            --this.idleAnimationTimeout;
+        }
     }
 }

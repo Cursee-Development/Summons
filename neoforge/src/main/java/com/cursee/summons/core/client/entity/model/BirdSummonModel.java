@@ -6,6 +6,7 @@ import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 
 public class BirdSummonModel<T extends Entity> extends HierarchicalModel<T> {
@@ -65,6 +66,7 @@ public class BirdSummonModel<T extends Entity> extends HierarchicalModel<T> {
     @Override
     public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
+        this.applyHeadRotation(netHeadYaw, headPitch);
     }
 
 //    @Override
@@ -88,5 +90,14 @@ public class BirdSummonModel<T extends Entity> extends HierarchicalModel<T> {
     @Override
     public ModelPart root() {
         return this.body;
+    }
+
+    private void applyHeadRotation(float netHeadYaw, float headPitch) {
+
+        netHeadYaw = Mth.clamp(netHeadYaw, -30.0F, 30.0F);
+        headPitch = Mth.clamp(headPitch, -25.0F, 45.0F);
+
+        this.head.yRot = netHeadYaw * (float) (Math.PI / 180.0);
+        this.head.xRot = headPitch * (float) (Math.PI / 180.0);
     }
 }
