@@ -2,6 +2,7 @@ package com.cursee.summons.core.datagen.worldgen.custom.configured;
 
 import com.cursee.summons.Constants;
 import com.cursee.summons.core.common.registry.ModBlocksNeoForge;
+import com.cursee.summons.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
@@ -113,7 +114,9 @@ public class CustomMonsterRoomFeaturePlacement {
             safeSetBlock(level, origin, ModBlocksNeoForge.SUMMON_TOMBSTONE.get().defaultBlockState(), notReplaceable);
         }
 
-        Constants.LOG.info("*Should* have created CustomMonsterRoomFeature at ({}, {}, {})", origin.getX(), origin.getY(), origin.getZ());
+        if (Services.PLATFORM.isDevelopmentEnvironment()) {
+            Constants.LOG.info("*Should* have created CustomMonsterRoomFeature at ({}, {}, {})", origin.getX(), origin.getY(), origin.getZ());
+        }
 
         return false;
     }
