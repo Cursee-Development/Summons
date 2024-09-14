@@ -4,12 +4,16 @@ import com.cursee.summons.Constants;
 import com.cursee.summons.core.common.registry.ModBlockEntityTypesNeoForge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 public class SummonTombstoneBlockEntityNeoForge extends BlockEntity {
+
+    @Nullable public Player temporaryPlayerReference = null;
 
     public SummonTombstoneBlockEntityNeoForge(BlockPos blocKPos, BlockState blockState) {
         super(ModBlockEntityTypesNeoForge.SUMMON_TOMBSTONE.get(), blocKPos, blockState);

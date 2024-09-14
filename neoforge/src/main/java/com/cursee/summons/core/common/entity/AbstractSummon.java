@@ -1,12 +1,13 @@
 package com.cursee.summons.core.common.entity;
 
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 
-public abstract class AbstractSummon extends Animal {
+public abstract class AbstractSummon extends TamableAnimal {
 
-    protected AbstractSummon(EntityType<? extends Animal> entityType, Level level) {
+    protected AbstractSummon(EntityType<? extends TamableAnimal> entityType, Level level) {
         super(entityType, level);
     }
 }

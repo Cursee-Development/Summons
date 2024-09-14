@@ -6,16 +6,19 @@ import com.cursee.summons.core.common.entity.custom.QuieterLightningBoltEntityNe
 import com.cursee.summons.core.common.registry.ModBlockEntityTypesNeoForge;
 import com.cursee.summons.core.common.registry.ModBlocksNeoForge;
 import com.cursee.summons.core.common.registry.ModEntityTypesNeoForge;
+import com.cursee.summons.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -29,12 +32,16 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
@@ -108,7 +115,18 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
         if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) == 0) {
             serverLevel.setBlock(blockPos, blockState.setValue(SUMMONING_AGE, 1), Block.UPDATE_ALL_IMMEDIATE);
+
+            if (serverLevel.getBlockEntity(blockPos) instanceof SummonTombstoneBlockEntityNeoForge tombstone && tombstone.temporaryPlayerReference == null) {
+                tombstone.temporaryPlayerReference = player;
+            }
+
             serverLevel.scheduleTick(blockPos, this, DELAY_IN_TICKS);
+        }
+        else if (player.isShiftKeyDown() && Services.PLATFORM.isDevelopmentEnvironment()) {
+            if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) == 0) {
+                serverLevel.setBlock(blockPos, blockState.setValue(SUMMONING_AGE, MAX_AGE - 1), Block.UPDATE_ALL_IMMEDIATE);
+                serverLevel.scheduleTick(blockPos, this, DELAY_IN_TICKS);
+            }
         }
 
         return InteractionResult.SUCCESS_NO_ITEM_USED;
@@ -180,18 +198,32 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
                 } // yOffset
             } // xOffset
 
-            serverLevel.setBlock(blockPos, ModBlocksNeoForge.SUMMON_TOMBSTONE_USED.get().defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
-            serverLevel.setBlock(blockPos.above(), Blocks.FIRE.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
-            
-            List<EntityType<? extends AbstractSummon>> possibleSummonTypes = List.of(ModEntityTypesNeoForge.FAIRY_SUMMON.get(), ModEntityTypesNeoForge.BATTLE_SUMMON.get());
-            final int toSpawnIndex = randomSource.nextInt(1, possibleSummonTypes.size()) - 1;
+            List<EntityType<? extends AbstractSummon>> possibleSummonTypes = List.of(ModEntityTypesNeoForge.FAIRY_SUMMON.get(), ModEntityTypesNeoForge.BATTLE_SUMMON.get(), ModEntityTypesNeoForge.BIRD_SUMMON.get());
+            final int toSpawnIndex = randomSource.nextInt(1, possibleSummonTypes.size() + 1) - 1; // range is non-inclusive of upper bound
+
             AbstractSummon summon = possibleSummonTypes.get(toSpawnIndex).create(serverLevel);
+
+            if (summon == null) return; // functions as assertion but better
+
+            if (serverLevel.getBlockEntity(blockPos) instanceof SummonTombstoneBlockEntityNeoForge tombstone && tombstone.temporaryPlayerReference != null) {
+
+                serverLevel.getEntitiesOfClass(AbstractSummon.class, new AABB(blockPos).inflate(15.0D)).forEach(entity -> {
+                    if (entity.isOwnedBy(tombstone.temporaryPlayerReference)) {
+                        entity.discard();
+                    }
+                });
+
+                summon.tame(tombstone.temporaryPlayerReference);
+            }
+
             summon.moveTo(blockPos.getX(), blockPos.above().getY(), blockPos.getZ());
             serverLevel.addFreshEntity(summon);
             double d0 = serverLevel.random.nextDouble() * (float) (Math.PI * 2);
             summon.setDeltaMovement(-Math.sin(d0) * 0.02, 0.4F, -Math.cos(d0) * 0.02);
             summon.setRemainingFireTicks(4 * 20);
 
+            // finish by replacing the original tombstone
+            serverLevel.setBlock(blockPos, ModBlocksNeoForge.SUMMON_TOMBSTONE_USED.get().defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
         }
     } // end tick(BlockState, ServerLevel, BlockPos, RandomSource)
 

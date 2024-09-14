@@ -2,6 +2,7 @@ package com.cursee.summons.core.common.registry;
 
 import com.cursee.summons.Constants;
 import com.cursee.summons.core.common.entity.custom.BattleSummonEntity;
+import com.cursee.summons.core.common.entity.custom.BirdSummonEntity;
 import com.cursee.summons.core.common.entity.custom.FairySummonEntity;
 import com.cursee.summons.core.common.entity.custom.QuieterLightningBoltEntityNeoForge;
 import net.minecraft.resources.ResourceLocation;
@@ -17,4 +18,5 @@ public class ModEntityTypesNeoForge {
 
     public static final DeferredHolder<EntityType<?>, EntityType<FairySummonEntity>> FAIRY_SUMMON = RegistryNeoForge.registerEntityType("fairy_summon", () -> EntityType.Builder.of(FairySummonEntity::new, MobCategory.MISC).sized(0.5f, 0.5f).build(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "fairy_summon").toString()));
     public static final DeferredHolder<EntityType<?>, EntityType<BattleSummonEntity>> BATTLE_SUMMON = RegistryNeoForge.registerEntityType("battle_summon", () -> EntityType.Builder.of(BattleSummonEntity::new, MobCategory.MISC).sized(1.5f, 2.0f).build(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "battle_summon").toString()));
+    public static final DeferredHolder<EntityType<?>, EntityType<BirdSummonEntity>> BIRD_SUMMON = RegistryNeoForge.registerEntityType("bird_summon", () -> EntityType.Builder.of(BirdSummonEntity::new, MobCategory.MISC).sized(0.5f, 0.5f).build(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "bird_summon").toString()));
 }
