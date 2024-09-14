@@ -9,6 +9,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LanternBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -84,7 +85,8 @@ public class CustomMonsterRoomFeaturePlacement {
                     if (xOffset == XZ_LOWER_BOUND || yOffset == Y_OFFSET_FLOOR || zOffset == XZ_LOWER_BOUND || xOffset == XZ_UPPER_BOUND || yOffset == Y_OFFSET_CEILING || zOffset == XZ_UPPER_BOUND) {
 
                         if (positionToCheck.getY() >= level.getMinBuildHeight() && !level.getBlockState(positionToCheck.below()).isSolid()) {
-                            level.setBlock(positionToCheck, Blocks.CAVE_AIR.defaultBlockState(), 2);
+                            // level.setBlock(positionToCheck, Blocks.CAVE_AIR.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+                            safeSetBlock(level, positionToCheck, Blocks.CAVE_AIR.defaultBlockState(), notReplaceable);
                         }
                         else if (positionBlockState.isSolid() && !positionBlockState.is(Blocks.CHEST)) {
 
@@ -99,6 +101,9 @@ public class CustomMonsterRoomFeaturePlacement {
                                 safeSetBlock(level, positionToCheck, Blocks.QUARTZ_BLOCK.defaultBlockState(), notReplaceable);
                             }
                         }
+                    }
+                    else if (yOffset == Y_OFFSET_CEILING - 1 && xOffset == 0 && zOffset == 0) {
+                        safeSetBlock(level, positionToCheck, Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true), notReplaceable);
                     }
                     else if (!positionBlockState.is(Blocks.CHEST) && !positionBlockState.is(Blocks.SPAWNER)) {
                         safeSetBlock(level, positionToCheck, Blocks.CAVE_AIR.defaultBlockState(), notReplaceable);
