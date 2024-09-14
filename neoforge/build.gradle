@@ -1,6 +1,7 @@
 plugins {
     id 'multiloader-loader'
-    id 'net.neoforged.gradle.userdev' version '7.0.145'
+    id 'net.neoforged.gradle.userdev' version '7.0.163'
+    id 'net.neoforged.gradle.neoform' version '7.0.163'
 }
 
 // Automatically enable neoforge AccessTransformers if the file exists
