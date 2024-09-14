@@ -6,6 +6,8 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -62,7 +64,7 @@ public class FairySummonEntity extends AbstractSummon implements FlyingAnimal {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 6.0)
+                .add(Attributes.MAX_HEALTH, 10.0D)
                 .add(Attributes.FLYING_SPEED, 0.4F)
                 .add(Attributes.MOVEMENT_SPEED, 0.2F)
                 .add(Attributes.ATTACK_DAMAGE, 3.0);
@@ -73,6 +75,7 @@ public class FairySummonEntity extends AbstractSummon implements FlyingAnimal {
 
         if (source.is(DamageTypes.LIGHTNING_BOLT)) return false;
         if (source.is(DamageTypes.ON_FIRE) || source.is(DamageTypes.IN_FIRE)) return false;
+        if (source.is(DamageTypes.FALL)) return false;
 
         return super.hurt(source, damage);
     }
@@ -80,5 +83,12 @@ public class FairySummonEntity extends AbstractSummon implements FlyingAnimal {
     @Override
     public boolean isFlying() {
         return !this.onGround();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (getOwner() != null && distanceToSqr(getOwner()) <= 3.0D) getOwner().addEffect(new MobEffectInstance(MobEffects.REGENERATION, 2, 2));
     }
 }

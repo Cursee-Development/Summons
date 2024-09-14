@@ -6,14 +6,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -24,15 +22,21 @@ import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.animal.Parrot;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal {
+public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal, RangedAttackMob {
 
     public BirdSummonEntity(EntityType<?> entityType, Level level) {
         super(ModEntityTypesNeoForge.BIRD_SUMMON.get(), level);
@@ -72,7 +76,7 @@ public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 6.0)
+                .add(Attributes.MAX_HEALTH, 10.0D)
                 .add(Attributes.FLYING_SPEED, 0.4F)
                 .add(Attributes.MOVEMENT_SPEED, 0.2F)
                 .add(Attributes.ATTACK_DAMAGE, 3.0);
@@ -83,6 +87,7 @@ public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal {
 
         if (source.is(DamageTypes.LIGHTNING_BOLT)) return false;
         if (source.is(DamageTypes.ON_FIRE) || source.is(DamageTypes.IN_FIRE)) return false;
+        if (source.is(DamageTypes.FALL)) return false;
 
         return super.hurt(source, damage);
     }
@@ -90,6 +95,33 @@ public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal {
     @Override
     public boolean isFlying() {
         return !this.onGround();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        // assuming getGameTime() returns the tick count, this should make the bird shoot and arrow once per second
+        if (!this.level().isClientSide() && this.level().getLevelData().getGameTime() % 20L == 0 && this.random.nextBoolean()) {
+            ServerLevel level = (ServerLevel) this.level();
+            level.getEntitiesOfClass(Monster.class, new AABB(this.blockPosition()).inflate(5)).forEach(monster -> {
+                performRangedAttack(monster, 0.0f);
+            });
+        }
+    }
+
+    @Override
+    public void performRangedAttack(LivingEntity entity, float unusedFloat) {
+//        Arrow arrow = new Arrow(this.level(), this);
+        Arrow arrow = new Arrow(this.level(), this, new ItemStack(Items.ARROW), new ItemStack(Items.ARROW));
+        double d0 = entity.getEyeY() - 1.1F;
+        double d1 = entity.getX() - this.getX();
+        double d2 = d0 - arrow.getY();
+        double d3 = entity.getZ() - this.getZ();
+        double d4 = Math.sqrt(d1 * d1 + d3 * d3) * 0.2F;
+        arrow.shoot(d1, d2 + d4, d3, 1.6F, 12.0F);
+        this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+        this.level().addFreshEntity(arrow);
     }
 
     static class ParrotWanderGoal extends WaterAvoidingRandomFlyingGoal {
