@@ -36,7 +36,6 @@ public class FairySummonEntity extends AbstractSummon implements FlyingAnimal {
         this.moveControl = new FlyingMoveControl(this, 10, false);
         this.setPathfindingMalus(PathType.DANGER_FIRE, -1.0F);
         this.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
-        this.setPathfindingMalus(PathType.COCOA, -1.0F);
     }
 
     @Override
@@ -63,8 +62,8 @@ public class FairySummonEntity extends AbstractSummon implements FlyingAnimal {
 
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new FollowOwnerGoal(this, 1.0, 5.0F, 1.0F));
-        this.goalSelector.addGoal(2, new SitWhenOrderedToGoal(this));
-        this.goalSelector.addGoal(2, new BirdSummonEntity.ParrotWanderGoal(this, 1.0));
+//        this.goalSelector.addGoal(2, new SitWhenOrderedToGoal(this));
+        this.goalSelector.addGoal(2, new BirdSummonEntity.WanderGoal(this, 1.0));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -102,7 +101,7 @@ public class FairySummonEntity extends AbstractSummon implements FlyingAnimal {
 
         if (getOwner() != null && !getOwner().hasEffect(MobEffects.REGENERATION) && distanceToSqr(getOwner()) <= 6.0D && this.random.nextInt(1, 64) == 1) {
 
-            getOwner().addEffect(new MobEffectInstance(MobEffects.REGENERATION, secondsToTicks(4f), 1));
+            getOwner().addEffect(new MobEffectInstance(MobEffects.REGENERATION, secondsToTicks(4f), 2));
 
             serverLevel.playSound(null, getOwner().blockPosition().getX(), getOwner().blockPosition().getY(), getOwner().blockPosition().getZ(), SoundEvents.ALLAY_THROW, SoundSource.NEUTRAL, 0.2f, 1f);
         }

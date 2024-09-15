@@ -33,7 +33,7 @@ public class magmard<T extends Entity> extends EntityModel<T> {
 		PartDefinition body = partdefinition.addOrReplaceChild("body", CubeListBuilder.create(), PartPose.offset(0.0F, -7.0F, 0.0F));
 
 		PartDefinition torso = body.addOrReplaceChild("torso", CubeListBuilder.create().texOffs(0, 40).addBox(-9.0F, -2.0F, -6.0F, 18.0F, 12.0F, 11.0F, new CubeDeformation(0.0F))
-		.texOffs(0, 116).addBox(-7.5F, 10.0F, -4.5F, 15.0F, 4.5F, 8.0F, new CubeDeformation(0.5F)), PartPose.offset(0.0F, 0.0F, 0.0F));
+		.texOffs(0, 116).addBox(-7.5F, 10.5F, -4.5F, 15.0F, 4.0F, 8.0F, new CubeDeformation(0.5F)), PartPose.offset(0.0F, 0.0F, 0.0F));
 
 		PartDefinition head = torso.addOrReplaceChild("head", CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -12.0F, -4.5F, 8.0F, 10.0F, 8.0F, new CubeDeformation(0.0F))
 		.texOffs(24, 0).addBox(-1.0F, -5.0F, -6.5F, 2.0F, 4.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, -2.0F));

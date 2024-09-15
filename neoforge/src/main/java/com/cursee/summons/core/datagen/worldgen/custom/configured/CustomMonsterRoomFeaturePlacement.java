@@ -55,7 +55,8 @@ public class CustomMonsterRoomFeaturePlacement {
 
                     // checks if there is an entry into the room or exposed corner, already carved by world generation
                     if ((xOffset == XZ_OFFSET_WALL || xOffset == -XZ_OFFSET_WALL || zOffset == XZ_OFFSET_WALL || zOffset == -XZ_OFFSET_WALL) && yOffset == 0 && level.isEmptyBlock(positionToCheck) && level.isEmptyBlock(positionToCheck.above())) {
-                        canBePlaced = true;
+
+                        canBePlaced = random.nextInt(1, 4) == 1;
                     }
                 } // z
             } // y
@@ -85,8 +86,8 @@ public class CustomMonsterRoomFeaturePlacement {
                     if (xOffset == XZ_LOWER_BOUND || yOffset == Y_OFFSET_FLOOR || zOffset == XZ_LOWER_BOUND || xOffset == XZ_UPPER_BOUND || yOffset == Y_OFFSET_CEILING || zOffset == XZ_UPPER_BOUND) {
 
                         if (positionToCheck.getY() >= level.getMinBuildHeight() && !level.getBlockState(positionToCheck.below()).isSolid()) {
-                            // level.setBlock(positionToCheck, Blocks.CAVE_AIR.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
-                            safeSetBlock(level, positionToCheck, Blocks.CAVE_AIR.defaultBlockState(), notReplaceable);
+                            level.setBlock(positionToCheck, Blocks.CAVE_AIR.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+                            // safeSetBlock(level, positionToCheck, Blocks.CAVE_AIR.defaultBlockState(), notReplaceable);
                         }
                         else if (positionBlockState.isSolid() && !positionBlockState.is(Blocks.CHEST)) {
 

@@ -110,7 +110,7 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
     protected InteractionResult useWithoutItem(BlockState blockState, Level level, BlockPos blockPos, Player player, BlockHitResult blockHitResult) {
 
         if (level.isClientSide() || !(level instanceof ServerLevel serverLevel)) {
-            return InteractionResult.PASS;
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
 
         if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) == 0) {
@@ -122,12 +122,12 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
             serverLevel.scheduleTick(blockPos, this, DELAY_IN_TICKS);
         }
-        else if (player.isShiftKeyDown() && Services.PLATFORM.isDevelopmentEnvironment()) {
-            if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) == 0) {
-                serverLevel.setBlock(blockPos, blockState.setValue(SUMMONING_AGE, MAX_AGE - 1), Block.UPDATE_ALL_IMMEDIATE);
-                serverLevel.scheduleTick(blockPos, this, DELAY_IN_TICKS);
-            }
-        }
+//        else if (player.isShiftKeyDown() && Services.PLATFORM.isDevelopmentEnvironment()) {
+//            if (blockState.hasProperty(SUMMONING_AGE) && blockState.getValue(SUMMONING_AGE) == 0) {
+//                serverLevel.setBlock(blockPos, blockState.setValue(SUMMONING_AGE, MAX_AGE - 1), Block.UPDATE_ALL_IMMEDIATE);
+//                serverLevel.scheduleTick(blockPos, this, DELAY_IN_TICKS);
+//            }
+//        }
 
         return InteractionResult.SUCCESS_NO_ITEM_USED;
     }
@@ -208,26 +208,26 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
             if (serverLevel.getBlockEntity(blockPos) instanceof SummonTombstoneBlockEntityNeoForge tombstone && tombstone.temporaryPlayerReference != null) {
 
                 serverLevel.getEntitiesOfClass(AbstractSummon.class, new AABB(blockPos).inflate(15.0D)).forEach(entity -> {
-                    if (entity.isOwnedBy(tombstone.temporaryPlayerReference)) {
+//                    if (entity.isOwnedBy(tombstone.temporaryPlayerReference)) {
+//                    }
 
-                        if (entity instanceof FairySummonEntity) {
-                            ItemEntity egg = new ItemEntity(serverLevel, entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ(), new ItemStack(ModItemsNeoForge.UNTAMED_FAIRY_SUMMON_SPAWN_EGG_ITEM.get()));
-                            egg.moveTo(entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ());
-                            serverLevel.addFreshEntity(egg);
-                        }
-                        if (entity instanceof BattleSummonEntity) {
-                            ItemEntity egg = new ItemEntity(serverLevel, entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ(), new ItemStack(ModItemsNeoForge.UNTAMED_BATTLE_SUMMON_SPAWN_EGG_ITEM.get()));
-                            egg.moveTo(entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ());
-                            serverLevel.addFreshEntity(egg);
-                        }
-                        if (entity instanceof BirdSummonEntity) {
-                            ItemEntity egg = new ItemEntity(serverLevel, entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ(), new ItemStack(ModItemsNeoForge.UNTAMED_BIRD_SUMMON_SPAWN_EGG_ITEM.get()));
-                            egg.moveTo(entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ());
-                            serverLevel.addFreshEntity(egg);
-                        }
-
-                        entity.discard();
+                    if (entity instanceof FairySummonEntity) {
+                        ItemEntity egg = new ItemEntity(serverLevel, entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ(), new ItemStack(ModItemsNeoForge.UNTAMED_FAIRY_SUMMON_SPAWN_EGG_ITEM.get()));
+                        egg.moveTo(entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ());
+                        serverLevel.addFreshEntity(egg);
                     }
+                    if (entity instanceof BattleSummonEntity) {
+                        ItemEntity egg = new ItemEntity(serverLevel, entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ(), new ItemStack(ModItemsNeoForge.UNTAMED_BATTLE_SUMMON_SPAWN_EGG_ITEM.get()));
+                        egg.moveTo(entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ());
+                        serverLevel.addFreshEntity(egg);
+                    }
+                    if (entity instanceof BirdSummonEntity) {
+                        ItemEntity egg = new ItemEntity(serverLevel, entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ(), new ItemStack(ModItemsNeoForge.UNTAMED_BIRD_SUMMON_SPAWN_EGG_ITEM.get()));
+                        egg.moveTo(entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ());
+                        serverLevel.addFreshEntity(egg);
+                    }
+
+                    entity.discard();
                 });
 
                 summon.tame(tombstone.temporaryPlayerReference);

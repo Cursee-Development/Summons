@@ -19,13 +19,10 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.FlyingAnimal;
-import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -37,6 +34,9 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal, RangedAttackMob {
+
+    public final AnimationState idleAnimationState = new AnimationState();
+    private int idleAnimationTimeout = 0;
 
     public BirdSummonEntity(EntityType<?> entityType, Level level) {
         super(ModEntityTypesNeoForge.BIRD_SUMMON.get(), level);
@@ -71,7 +71,7 @@ public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal, Ra
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new FollowOwnerGoal(this, 1.0, 5.0F, 1.0F));
         this.goalSelector.addGoal(2, new SitWhenOrderedToGoal(this));
-        this.goalSelector.addGoal(2, new ParrotWanderGoal(this, 1.0));
+        this.goalSelector.addGoal(2, new WanderGoal(this, 1.0));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -101,6 +101,10 @@ public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal, Ra
     public void tick() {
         super.tick();
 
+        if (this.level().isClientSide()) {
+            this.setupAnimationStates();
+        }
+
         // assuming getGameTime() returns the tick count, this should make the bird shoot and arrow once per second
         if (!this.level().isClientSide() && this.level().getLevelData().getGameTime() % 20L == 0 && this.random.nextBoolean()) {
             ServerLevel level = (ServerLevel) this.level();
@@ -124,8 +128,8 @@ public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal, Ra
         this.level().addFreshEntity(arrow);
     }
 
-    static class ParrotWanderGoal extends WaterAvoidingRandomFlyingGoal {
-        public ParrotWanderGoal(PathfinderMob p_186224_, double p_186225_) {
+    static class WanderGoal extends WaterAvoidingRandomFlyingGoal {
+        public WanderGoal(PathfinderMob p_186224_, double p_186225_) {
             super(p_186224_, p_186225_);
         }
 
@@ -133,6 +137,7 @@ public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal, Ra
         @Override
         protected Vec3 getPosition() {
             Vec3 vec3 = null;
+
             if (this.mob.isInWater()) {
                 vec3 = LandRandomPos.getPos(this.mob, 15, 15);
             }
@@ -170,6 +175,17 @@ public class BirdSummonEntity extends AbstractSummon implements FlyingAnimal, Ra
             }
 
             return null;
+        }
+    }
+
+    private void setupAnimationStates() {
+
+        if (this.idleAnimationTimeout <= 0) {
+            this.idleAnimationTimeout = secondsToTicks(2f);
+            this.idleAnimationState.start(this.tickCount);
+        }
+        else {
+            --this.idleAnimationTimeout;
         }
     }
 }

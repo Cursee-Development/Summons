@@ -1,5 +1,8 @@
 package com.cursee.summons.core.client.entity.model;
 
+import com.cursee.summons.core.client.entity.animations.BirdSummonAnimations;
+import com.cursee.summons.core.client.entity.animations.FairySummonAnimations;
+import com.cursee.summons.core.common.entity.custom.BirdSummonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.HierarchicalModel;
@@ -9,7 +12,7 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 
-public class BirdSummonModel<T extends Entity> extends HierarchicalModel<T> {
+public class BirdSummonModel<T extends BirdSummonEntity> extends HierarchicalModel<T> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
     // public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "bird_summon_model"), "main");
 
@@ -64,9 +67,11 @@ public class BirdSummonModel<T extends Entity> extends HierarchicalModel<T> {
     }
 
     @Override
-    public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(BirdSummonEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
         this.applyHeadRotation(netHeadYaw, headPitch);
+        this.animateWalk(BirdSummonAnimations.FLY, limbSwing, limbSwingAmount, 2f, 2.5f);
+        this.animate(entity.idleAnimationState, BirdSummonAnimations.IDLE, ageInTicks, 1f);
     }
 
 //    @Override
