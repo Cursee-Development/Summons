@@ -4,6 +4,8 @@ import com.cursee.summons.core.common.entity.AbstractSummon;
 import com.cursee.summons.core.common.registry.ModEntityTypesNeoForge;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -18,7 +20,6 @@ import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -99,7 +100,12 @@ public class FairySummonEntity extends AbstractSummon implements FlyingAnimal {
 
         if (this.level().isClientSide() || !(this.level() instanceof ServerLevel serverLevel)) return;
 
-        if (getOwner() != null && distanceToSqr(getOwner()) <= 6.0D) getOwner().addEffect(new MobEffectInstance(MobEffects.REGENERATION, secondsToTicks(2f)));
+        if (getOwner() != null && !getOwner().hasEffect(MobEffects.REGENERATION) && distanceToSqr(getOwner()) <= 6.0D && this.random.nextInt(1, 64) == 1) {
+
+            getOwner().addEffect(new MobEffectInstance(MobEffects.REGENERATION, secondsToTicks(4f), 1));
+
+            serverLevel.playSound(null, getOwner().blockPosition().getX(), getOwner().blockPosition().getY(), getOwner().blockPosition().getZ(), SoundEvents.ALLAY_THROW, SoundSource.NEUTRAL, 0.2f, 1f);
+        }
     }
 
     private void setupAnimationStates() {
