@@ -1,8 +1,16 @@
 {
   "itemGroup.summons": "Summons",
 
+  "item.summons.untamed_fairy_summon_spawn_egg_item": "(Wild) Fairy Summon Spawn Egg",
+  "item.summons.untamed_battle_summon_spawn_egg_item": "(Wild) Battle Summon Spawn Egg",
+  "item.summons.untamed_bird_summon_spawn_egg_item": "(Wild) Bird Summon Spawn Egg",
+
+  "item.summons.tamed_fairy_summon_spawn_egg_item": "(Tame) Fairy Summon Spawn Egg",
+  "item.summons.tamed_battle_summon_spawn_egg_item": "(Tame) Battle Summon Spawn Egg",
+  "item.summons.tamed_bird_summon_spawn_egg_item": "(Tame) Bird Summon Spawn Egg",
+
   "block.summons.summon_tombstone": "Summon Tombstone",
-  "block.summons.summon_tombstone_used": "Summon Tombstone (Used)",
+  "block.summons.summon_tombstone_used": "(Used) Summon Tombstone",
 
   "message.summons.requires_empty_hands": "Maybe I should empty my hands first...",
 

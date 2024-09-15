@@ -2,24 +2,27 @@ package com.cursee.summons.core.common.block.custom;
 
 import com.cursee.summons.core.common.block.entity.custom.SummonTombstoneBlockEntityNeoForge;
 import com.cursee.summons.core.common.entity.AbstractSummon;
+import com.cursee.summons.core.common.entity.custom.BattleSummonEntity;
+import com.cursee.summons.core.common.entity.custom.BirdSummonEntity;
+import com.cursee.summons.core.common.entity.custom.FairySummonEntity;
 import com.cursee.summons.core.common.entity.custom.QuieterLightningBoltEntityNeoForge;
 import com.cursee.summons.core.common.registry.ModBlockEntityTypesNeoForge;
 import com.cursee.summons.core.common.registry.ModBlocksNeoForge;
 import com.cursee.summons.core.common.registry.ModEntityTypesNeoForge;
+import com.cursee.summons.core.common.registry.ModItemsNeoForge;
 import com.cursee.summons.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -32,7 +35,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -40,8 +42,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
@@ -209,6 +209,23 @@ public class SummonTombstoneBlockNeoForge extends Block implements EntityBlock {
 
                 serverLevel.getEntitiesOfClass(AbstractSummon.class, new AABB(blockPos).inflate(15.0D)).forEach(entity -> {
                     if (entity.isOwnedBy(tombstone.temporaryPlayerReference)) {
+
+                        if (entity instanceof FairySummonEntity) {
+                            ItemEntity egg = new ItemEntity(serverLevel, entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ(), new ItemStack(ModItemsNeoForge.UNTAMED_FAIRY_SUMMON_SPAWN_EGG_ITEM.get()));
+                            egg.moveTo(entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ());
+                            serverLevel.addFreshEntity(egg);
+                        }
+                        if (entity instanceof BattleSummonEntity) {
+                            ItemEntity egg = new ItemEntity(serverLevel, entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ(), new ItemStack(ModItemsNeoForge.UNTAMED_BATTLE_SUMMON_SPAWN_EGG_ITEM.get()));
+                            egg.moveTo(entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ());
+                            serverLevel.addFreshEntity(egg);
+                        }
+                        if (entity instanceof BirdSummonEntity) {
+                            ItemEntity egg = new ItemEntity(serverLevel, entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ(), new ItemStack(ModItemsNeoForge.UNTAMED_BIRD_SUMMON_SPAWN_EGG_ITEM.get()));
+                            egg.moveTo(entity.blockPosition().getX(), entity.blockPosition().getY(), entity.blockPosition().getZ());
+                            serverLevel.addFreshEntity(egg);
+                        }
+
                         entity.discard();
                     }
                 });
