@@ -1,4 +1,4 @@
-package com.cursee.summons.core.common.registry;
+package com.cursee.summons.core.client.registry;
 
 import com.cursee.summons.Constants;
 import net.minecraft.client.model.geom.ModelLayerLocation;

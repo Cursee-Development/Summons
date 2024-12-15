@@ -1,7 +1,7 @@
 package com.cursee.summons.core.common.registry;
 
 import com.cursee.summons.Constants;
-import net.minecraft.core.Registry;
+// import com.cursee.summons.core.client.registry.ModModelLayersNeoForge;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -15,7 +15,6 @@ import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfigur
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.function.Supplier;
 
@@ -40,7 +39,7 @@ public class RegistryNeoForge {
         ModEntityTypesNeoForge.register();
         ModDataComponentsNeoForge.register();
         ModFeaturesNeoForge.register();
-        ModModelLayersNeoForge.register();
+        // ModModelLayersNeoForge.register();
 
         RegistryNeoForge.BLOCKS.register(modEventBus);
         RegistryNeoForge.ITEMS.register(modEventBus);

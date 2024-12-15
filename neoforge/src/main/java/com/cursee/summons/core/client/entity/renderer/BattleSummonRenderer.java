@@ -3,7 +3,7 @@ package com.cursee.summons.core.client.entity.renderer;
 import com.cursee.summons.Constants;
 import com.cursee.summons.core.client.entity.model.BattleSummonModel;
 import com.cursee.summons.core.common.entity.custom.BattleSummonEntity;
-import com.cursee.summons.core.common.registry.ModModelLayersNeoForge;
+import com.cursee.summons.core.client.registry.ModModelLayersNeoForge;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
