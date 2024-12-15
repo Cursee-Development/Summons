@@ -19,14 +19,14 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
 
 import java.util.function.Predicate;
 
-public class CustomMonsterRoomFeaturePlacement {
+public class SummoningRoomFeaturePlacement {
 
     public static final int XZ_OFFSET_WALL = 8;
 
     public static final int Y_OFFSET_FLOOR = -1;
     public static final int Y_OFFSET_CEILING = 4;
 
-    public static boolean attemptWithContext(CustomMonsterRoomFeature feature, FeaturePlaceContext<NoneFeatureConfiguration> context) {
+    public static boolean attemptWithContext(SummoningRoom feature, FeaturePlaceContext<NoneFeatureConfiguration> context) {
 
         final WorldGenLevel level = context.level();
         final ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -67,7 +67,7 @@ public class CustomMonsterRoomFeaturePlacement {
         return false;
     }
 
-    private static boolean createFeature(CustomMonsterRoomFeature feature, WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin, FeatureConfiguration configuration) {
+    private static boolean createFeature(SummoningRoom feature, WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin, FeatureConfiguration configuration) {
 
         final Predicate<BlockState> notReplaceable = Feature.isReplaceable(BlockTags.FEATURES_CANNOT_REPLACE);
 
